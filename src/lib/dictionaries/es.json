@@ -1,13 +1,10 @@
 {
-  "page": {
-    "home": {
-      "greeting": "Let's plan your next adventure.",
-      "section-one-heading": "Discover community created trips"
-    },
-    "chat": {
-    },
-    "trips": {
-      
-    }
-  }
+	"page": {
+		"home": {
+			"greeting": "Let's plan your next adventure.",
+			"section-one-heading": "Discover community created trips"
+		},
+		"chat": {},
+		"trips": {}
+	}
 }

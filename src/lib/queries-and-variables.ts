@@ -1,10 +1,9 @@
-export const cityIdQuery = `query GetCityId($filter: CityModelFilter) {
-          allCities(filter: $filter) {
-            id
-            name
-          }
-        }
-      `;
+export const cityIdQuery = `query GetAllCities {
+  allCities {
+    id
+    name
+  }
+}`;
 
 export const placeIdQuery = `
         query GetPlaceId($filter: PlaceModelFilter) {
@@ -20,7 +19,7 @@ export const citiesInCountryQuery = `query GetCitiesInCountry($filter: CityModel
         name
       }
     }
-  `
+  `;
 
 export const placesInCityQuery = `query AllPlaces($filter: PlaceModelFilter, $orderBy: PlaceModelOrderBy, $first: IntType, $skip: IntType) {
           allPlaces(filter: $filter, orderBy: [$orderBy], first: $first, skip: $skip) {

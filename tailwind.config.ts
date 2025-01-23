@@ -38,7 +38,7 @@ const config: Config = {
 				"1/2": "1 / 2",
 			},
 			screens: {
-				sm: "600px",
+				xs: "480px",
 			},
 			colors: {
 				background: "hsl(var(--background))",
