@@ -142,7 +142,6 @@
 }
 
 @layer components {
-
 	/* home page typography */
 	.home-h1 {
 		@apply leading-[1.1] text-8xl font-bold md:text-9xl lg:text-10xl xl:text-11xl;

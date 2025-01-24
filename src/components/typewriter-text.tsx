@@ -81,7 +81,7 @@ export const TypewriterEffect = ({
 				}}
 				transition={{
 					duration: 0.8,
-					repeat: Infinity,
+					repeat: Number.POSITIVE_INFINITY,
 					repeatType: "reverse",
 				}}
 				className={cn("hidden", cursorClassName)}
@@ -166,7 +166,7 @@ export const TypewriterEffectSmooth = ({
 				transition={{
 					duration: 0.8,
 
-					repeat: Infinity,
+					repeat: Number.POSITIVE_INFINITY,
 					repeatType: "reverse",
 				}}
 				className={cn(

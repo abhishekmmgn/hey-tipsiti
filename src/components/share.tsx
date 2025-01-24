@@ -2,10 +2,9 @@
 
 import { usePathname } from "next/navigation";
 import ResponsiveDialog from "./responsive-dialog";
-import { Button } from "./ui/button";
+import { Button } from "@/components/ui/button";
 import { Copy, ShareIcon } from "lucide-react";
-import { Switch } from "./ui/switch";
-import { Label } from "./ui/label";
+import { toast } from "sonner";
 
 export default function Share() {
 	const pathname = usePathname();
@@ -28,13 +27,18 @@ export default function Share() {
 							<div className="rounded-l-md h-full text-secondary-foreground flex items-center pl-2">
 								<p className="line-clamp-1 text-sm">{url}</p>
 							</div>
+							{/* biome-ignore lint/a11y/useKeyWithClickEvents: <explanation> */}
 							<div
 								className="w-10 aspect-square border grid place-items-center bg-secondary cursor-pointer hover:bg-tertiary/60 rounded-r-md"
-								onClick={() => navigator.clipboard.writeText(url)}
+								onClick={() => {
+									navigator.clipboard.writeText(url);
+									toast("Link copied successfully");
+								}}
 							>
 								<Copy className="size-4 text-primary " />
 							</div>
 						</div>
+						{/* biome-ignore lint/a11y/useKeyWithClickEvents: <explanation> */}
 						<div
 							className="w-10 aspect-square border grid place-items-center bg-secondary cursor-pointer hover:bg-tertiary/60 rounded-md"
 							onClick={() =>
@@ -47,10 +51,6 @@ export default function Share() {
 							<ShareIcon className="size-4 text-primary " />
 						</div>
 					</div>
-					{/* <div className="flex items-center justify-between gap-5">
-            <Label htmlFor="public-chat">Make it public</Label>
-            <Switch id="public-chat" />
-          </div> */}
 				</div>
 			</ResponsiveDialog>
 		);

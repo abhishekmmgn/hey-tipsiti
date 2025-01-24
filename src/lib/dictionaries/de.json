@@ -1,8 +1,8 @@
 {
 	"page": {
 		"home": {
-			"greeting": "Lass uns dein nächstes Abenteuer planen",
-			"section-one-heading": "Discover community created trips"
+			"greeting": "Lass uns dein nächstes Abenteuer planen.",
+			"section-one-heading": "Entdecke von der Community erstellte Reisen"
 		},
 		"chat": {},
 		"trips": {}

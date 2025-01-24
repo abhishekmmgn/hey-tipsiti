@@ -3,7 +3,6 @@ import "./globals.css";
 import { Inter } from "next/font/google";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "sonner";
-import Navbar from "@/components/navbar";
 import Providers from "@/components/providers";
 
 export const metadata: Metadata = {
@@ -31,7 +30,6 @@ export default function RootLayout({
 					disableTransitionOnChange
 				>
 					<Providers>
-						<Navbar />
 						{children}
 						<Toaster position="top-center" />
 					</Providers>

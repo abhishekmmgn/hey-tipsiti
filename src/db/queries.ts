@@ -5,40 +5,47 @@ import { desc, eq } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
 
-import { user, chat, User, reservation, Chat } from "./schema";
+import { user, chat, type User, reservation, Chat } from "./schema";
 
-let client = postgres(`${process.env.POSTGRES_URL!}?sslmode=require`);
-let db = drizzle(client);
+const client = postgres(
+	`${process.env.POSTGRES_URL as string}?sslmode=require`,
+);
+const db = drizzle(client);
 
-export async function getUser(email: string): Promise<Array<User>> {
-	try {
-		return await db.select().from(user).where(eq(user.email, email));
-	} catch (error) {
-		console.error("Failed to get user from database");
-		throw error;
-	}
-}
+// export async function getItineraries() {
+// 	try {
+// 		return await db.select().from(itinerary);
+// 	} catch (error) {
+// 		console.log("Failed to get itineraries");
+// 		throw error;
+// 	}
+// }
 
-export async function createUser(email: string, password: string) {
-	let salt = genSaltSync(10);
-	let hash = hashSync(password, salt);
-
-	try {
-		return await db.insert(user).values({ email, password: hash });
-	} catch (error) {
-		console.error("Failed to create user in database");
-		throw error;
-	}
+export async function saveUser({
+	id,
+	email,
+	name,
+}: {
+	id: string;
+	email: string;
+	name?: string;
+}) {
+	return await db.insert(user).values({
+		id,
+		email,
+		name,
+	});
 }
 
 export async function saveChat({
 	id,
 	messages,
-	// userId,
+	userId,
 }: {
 	id: string;
+	// biome-ignore lint/suspicious/noExplicitAny: <explanation>
 	messages: any;
-	// userId: string;
+	userId: string;
 }) {
 	try {
 		const selectedChats = await db.select().from(chat).where(eq(chat.id, id));
@@ -56,7 +63,7 @@ export async function saveChat({
 			id,
 			createdAt: new Date(),
 			messages: JSON.stringify(messages),
-			// userId,
+			userId,
 		});
 	} catch (error) {
 		console.error("Failed to save chat in database");
@@ -73,14 +80,30 @@ export async function deleteChatById({ id }: { id: string }) {
 	}
 }
 
-export async function getChats() {
+export async function getChatsByUserId(userId: string) {
 	try {
-		return await db.select().from(chat).orderBy(desc(chat.createdAt));
+		return await db
+			.select()
+			.from(chat)
+			.where(eq(chat.userId, userId))
+			.orderBy(desc(chat.createdAt));
 	} catch (error) {
 		console.error("Failed to get chats from database");
 		throw error;
 	}
 }
+
+// export async function getItineraries(userId: string) {
+// 	try {
+// 		return await db
+// 			.select()
+// 			.from(itinerary)
+// 			.where(eq(itinerary.userId, userId));
+// 	} catch (error) {
+// 		console.error("Failed to get initneraries from database");
+// 		throw error;
+// 	}
+// }
 
 export async function getChatById({ id }: { id: string }) {
 	try {
@@ -99,6 +122,7 @@ export async function createReservation({
 }: {
 	id: string;
 	userId: string;
+	// biome-ignore lint/suspicious/noExplicitAny: <explanation>
 	details: any;
 }) {
 	return await db.insert(reservation).values({

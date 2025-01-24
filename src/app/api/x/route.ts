@@ -1,6 +1,6 @@
 import { PlaceDataReturnType, PlaceType } from "@/lib/types";
 import { NextRequest, NextResponse } from "next/server";
-import { getId } from "@/lib/server-utils"
+import { getId } from "@/lib/server-utils";
 
 export async function GET(req: NextRequest) {
 	// const cityId = "63590888";

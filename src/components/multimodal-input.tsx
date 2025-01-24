@@ -1,17 +1,11 @@
 "use client";
 
-import { Attachment, ChatRequestOptions, CreateMessage, Message } from "ai";
+import type { ChatRequestOptions, CreateMessage, Message } from "ai";
 import { Textarea } from "@/components/ui/textarea";
 import { cn, createTypewriterWords } from "@/lib/utils";
 import { TypewriterEffect } from "./typewriter-text";
-import React, {
-	useRef,
-	useEffect,
-	useState,
-	useCallback,
-	Dispatch,
-	SetStateAction,
-} from "react";
+import type React from "react";
+import { useRef, useEffect, useState, useCallback } from "react";
 import { toast } from "sonner";
 import { ArrowUpIcon, StopIcon } from "@/components/icons";
 import useWindowSize from "@/hooks/use-window-size";
@@ -107,7 +101,7 @@ export default function MultimodalInput({
 			<div className="flex justify-end gap-2 absolute bottom-2 right-2">
 				{isLoading ? (
 					<Button
-						className="rounded-full p-1.5 h-fit absolute bottom-2 right-2 shadow-none"
+						className="rounded-full h-fit absolute bottom-2 right-2 shadow-none"
 						onClick={(event) => {
 							event.preventDefault();
 							stop();
@@ -117,7 +111,7 @@ export default function MultimodalInput({
 					</Button>
 				) : (
 					<Button
-						className="rounded-full p-1.5 h-fit absolute bottom-2 right-2 shadow-none"
+						className="rounded-full h-fit absolute bottom-2 right-2 shadow-none"
 						onClick={(event) => {
 							event.preventDefault();
 							submitForm();
@@ -173,7 +167,7 @@ export function HomeMultimodalInput({ className }: { className?: string }) {
 				setWordCount((prev) => (prev + 1) % typewriterPlaceholders.length);
 				const nextSentence =
 					typewriterPlaceholders[
-					(wordCount + 1) % typewriterPlaceholders.length
+						(wordCount + 1) % typewriterPlaceholders.length
 					];
 				setTypewriterSentence(nextSentence);
 				setTimeout(() => setShowTypewriter(true), 50);
@@ -210,7 +204,7 @@ export function HomeMultimodalInput({ className }: { className?: string }) {
 			)}
 			<div className="flex justify-end gap-2 absolute bottom-2 right-2">
 				<Button
-					className="rounded-full p-1.5 h-fit absolute bottom-2 right-2 shadow-none"
+					className="rounded-full h-fit absolute bottom-2 right-2 shadow-none"
 					onClick={(event) => {
 						event.preventDefault();
 						submitForm();

@@ -15,6 +15,7 @@ export default async function Page({ params, searchParams }: Props) {
 			id={id}
 			initialMessages={[]}
 			paramsMessage={message as string}
+			hideMultimodal={false}
 		/>
 	);
 }

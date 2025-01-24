@@ -1,5 +1,5 @@
-import { Message } from "ai";
-import { InferSelectModel } from "drizzle-orm";
+import type { Message } from "ai";
+import type { InferSelectModel } from "drizzle-orm";
 import {
 	pgTable,
 	varchar,
@@ -10,9 +10,9 @@ import {
 } from "drizzle-orm/pg-core";
 
 export const user = pgTable("User", {
-	id: uuid("id").primaryKey().notNull().defaultRandom(),
-	email: varchar("email", { length: 64 }).notNull(),
-	password: varchar("password", { length: 64 }),
+	id: uuid("id").primaryKey().notNull(),
+	email: varchar("email", { length: 64 }).unique().notNull(),
+	name: varchar("name", { length: 64 }),
 });
 
 export type User = InferSelectModel<typeof user>;
@@ -21,9 +21,9 @@ export const chat = pgTable("Chat", {
 	id: uuid("id").primaryKey().notNull().defaultRandom(),
 	createdAt: timestamp("createdAt").notNull(),
 	messages: json("messages").notNull(),
-	// userId: uuid("userId")
-	//   .notNull()
-	//   .references(() => user.id),
+	userId: uuid()
+		.notNull()
+		.references(() => user.id),
 });
 
 export type Chat = Omit<InferSelectModel<typeof chat>, "messages"> & {
@@ -35,9 +35,22 @@ export const reservation = pgTable("Reservation", {
 	createdAt: timestamp("createdAt").notNull(),
 	details: json("details").notNull(),
 	hasCompletedPayment: boolean("hasCompletedPayment").notNull().default(false),
-	userId: uuid("userId")
+	userId: uuid()
 		.notNull()
 		.references(() => user.id),
 });
 
 export type Reservation = InferSelectModel<typeof reservation>;
+
+// export const itinerary = pgTable("Itinerary", {
+// 	id: uuid("id").primaryKey().notNull().defaultRandom(),
+// 	createdAt: timestamp("createdAt").notNull(),
+// 	places: json("places").notNull(),
+// 	hotels: json("hotels"),
+// 	reservations: json("reservations"),
+// 	chatId: uuid("chatId")
+// 		.notNull()
+// 		.references(() => chat.id),
+// });
+
+// export type Itinerary = InferSelectModel<typeof itinerary>;

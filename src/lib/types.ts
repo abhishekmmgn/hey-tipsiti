@@ -1,9 +1,5 @@
 export type Budget = "cheap" | "okay" | "expensive";
-export type TipsitiItemType =
-	| "place"
-	| "city"
-	| "country"
-	| "acitivity";
+export type TipsitiItemType = "place" | "city" | "country" | "acitivity";
 export type WidgetType = "flights" | "hotels" | TipsitiItemType;
 
 export interface FlightsDataReturnType {
@@ -21,15 +17,15 @@ export interface HotelDataReturnType {
 	price: number;
 }
 
-export interface ActivityDataReturnType extends PlaceDataReturnType { }
+export interface ActivityDataReturnType extends PlaceDataReturnType {}
 
 export interface DataReturnType {
 	type: WidgetType;
 	data:
-	| FlightsDataReturnType
-	| HotelDataReturnType
-	| PlaceDataReturnType
-	| ActivityDataReturnType;
+		| FlightsDataReturnType
+		| HotelDataReturnType
+		| PlaceDataReturnType
+		| ActivityDataReturnType;
 }
 
 export interface DataIdentityType {
@@ -38,15 +34,14 @@ export interface DataIdentityType {
 	key?: string;
 }
 
-export interface TripCardType {
-	uid: string;
-	title: string;
+export interface ItemCardType {
+	id: string;
+	name: string;
 	description: string;
 	image: string;
-	creator: {
-		name: string;
-		uid: string;
-	};
+	city: string;
+	placeCategory?: string;
+	curatorName?: string;
 }
 
 export type LangType = "en" | "de" | "es" | "fr";
