@@ -1,9 +1,8 @@
-import { NextRequest, NextResponse } from "next/server";
-
+import { type NextRequest, NextResponse } from "next/server";
 import { match } from "@formatjs/intl-localematcher";
 import Negotiator from "negotiator";
 
-let locales = ["en", "fr", "de", "es"];
+const locales = ["en", "fr", "de", "es"];
 
 export function middleware(request: NextRequest) {
 	// // Check if there is any supported locale in the pathname

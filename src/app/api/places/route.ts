@@ -1,6 +1,6 @@
 import { placesInCityQuery } from "@/lib/queries-and-variables";
 import { fetcher } from "@/lib/server-utils";
-import type { PlaceType, PlaceDataReturnType, ItemCardType } from "@/lib/types";
+import type { PlaceDataReturnType, ItemCardType } from "@/lib/types";
 
 export async function GET(req: Request) {
 	const variables = {

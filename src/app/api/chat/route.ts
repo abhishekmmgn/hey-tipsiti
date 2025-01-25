@@ -9,6 +9,7 @@ import {
 	generateSampleFlightSearchResults,
 	generateSampleFlightStatus,
 	generateSampleSeatSelection,
+	getPlacesInACity,
 } from "@/ai/actions";
 import { activities } from "@/lib/constants";
 import { createReservation, getReservationById, saveChat } from "@/db/queries";
@@ -64,9 +65,18 @@ export async function POST(request: Request) {
       - search for flights
       - choose flight
       - select seats
-      - create reservation (ask user whether to proceed with payment or change reservation)
+      - create reservation (take confirmation too)
       - authorize payment (requires user consent, wait for user to finish payment and let you know when done)
       - display boarding pass (DO NOT display boarding pass without verifying payment)
+	- While doing hotel reservation:
+      - ask for any details you don't know, like name of person, etc.'
+      - here's the optimal flow
+      - search for hotels
+      - choose hotel
+      - select rooms
+      - book room (confirm the user too)
+      - authorize payment (requires user consent, wait for user to finish payment and let you know when done)
+      - display reciept
   `,
 		messages: coreMessages,
 		tools: {
@@ -75,14 +85,21 @@ export async function POST(request: Request) {
 					"Get places to visit in a city. Optionally filter by activities.",
 				parameters: z.object({
 					cityName: z.string().describe("Name of the city"),
-					cityId: z.string().describe("Id of the city").optional(),
+					countryName: z.string().describe("Name of the country"),
 					activityName: z
 						.string()
 						.describe("Activities user can do.")
 						.optional(),
 				}),
-				execute: async ({ cityName, cityId, activityName }) => {
-					const places = await getPlaces(cityName, cityId, activityName);
+				execute: async ({ cityName, countryName, activityName }) => {
+					const places = await getPlacesInACity(
+						cityName,
+						countryName,
+						activityName,
+					);
+					if (typeof places === "string") {
+						return "Can't find the places. But you can find cities to visit in the country.";
+					}
 					return places;
 				},
 			},
@@ -96,17 +113,11 @@ export async function POST(request: Request) {
 						),
 				}),
 				execute: async ({ countryName }) => {
-					const data:
-						| Array<{
-								name: string;
-								id: string;
-						  }>
-						| { error: string } = await getCitiesInACountry(countryName);
+					const data = await getCitiesInACountry(countryName);
 
-					if ("error" in data) {
+					if (typeof data === "string") {
 						return "Can't find the cities. But you can find places to visit in the country.";
 					}
-
 					return data.map((city) => city.name);
 				},
 			},

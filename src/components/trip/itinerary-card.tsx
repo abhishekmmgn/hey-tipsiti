@@ -68,13 +68,13 @@ export function ItineraryCard(
 						{props.description}
 					</CardDescription>
 				</div>
-				<div className="flex items-center gap-2 text-sm text-muted-foreground">
+				<div className="flex items-center gap-2 text-sm text-tertiary-foreground">
 					<p className="capitalize">{props.city.name}</p>•
 					<p>Popular for {props.placeCategory}</p>
 				</div>
 			</CardHeader>
 			{props.isChatUI && (
-				<CardFooter className="text-muted-foreground text-xs">
+				<CardFooter className="text-tertiary-foreground text-xs">
 					{saved === undefined ? (
 						<Button variant="ghost" className="w-full">
 							Loading...

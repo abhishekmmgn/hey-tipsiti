@@ -5,6 +5,7 @@ import { ItineraryCard } from "./itinerary-card";
 import PreviewDialog from "./preview-dialog";
 
 export function PlacesList({ places }: { places: PlaceType[] }) {
+	if (places.length === 0) return <p>No places found</p>;
 	return (
 		<div>
 			<ScrollArea className="w-72 xs:w-[360px] sm:w-[512px] md:w-[664px] sm:max-w-lg md:max-w-2xl whitespace-nowrap">

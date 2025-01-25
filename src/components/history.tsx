@@ -52,7 +52,7 @@ export default function History() {
 					setIsHistoryVisible(state);
 				}}
 			>
-				<SheetContent side="left" className="p-3 w-80 bg-muted">
+				<SheetContent side="left" className="p-3 w-80 bg-tertiary">
 					<SheetHeader>
 						<VisuallyHidden.Root>
 							<SheetTitle className="text-left">History</SheetTitle>

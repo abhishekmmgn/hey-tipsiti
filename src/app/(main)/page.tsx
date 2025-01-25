@@ -6,15 +6,17 @@ import { HomeMultimodalInput } from "@/components/multimodal-input";
 import { Suspense } from "react";
 import HomeSection from "@/components/home-section";
 
-export default async function Page({
-	params,
-}: {
-	params: Promise<{ lang: LangType }>;
-}) {
+type Props = {
+	params: Promise<{ id: string; lang: LangType }>;
+	searchParams?: Promise<{ page?: string }>;
+};
+
+export default async function Page({ params, searchParams }: Props) {
 	const id = generateUUID();
 	// const lang = (await params).lang;
 	// const dict = await getDictionary(lang);
 
+	const x = await searchParams;
 	return (
 		<main className="mt-14 max-w-screen-lg mx-auto default-gap">
 			<section className="10 mx-auto grid space-y-8 md:space-y-10 lg:space-y-12">
@@ -30,12 +32,14 @@ export default async function Page({
 				<h3>Curated places by the community</h3>
 				<Suspense
 					fallback={
-						<p className="text-tertiary-foreground">
-							Finding good stuff for you...
-						</p>
+						<div className="w-full grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+							<p className="text-tertiary-foreground col-span-full">
+								Finding good stuff for you...
+							</p>
+						</div>
 					}
 				>
-					<HomeSection />
+					<HomeSection page={x?.page || "1"} />
 				</Suspense>
 			</section>
 		</main>

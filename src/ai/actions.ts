@@ -10,7 +10,9 @@ import {
 import type { PlaceDataReturnType, PlaceType } from "@/lib/types";
 import { fetcher, getId } from "@/lib/server-utils";
 
-export async function getCitiesInACountry(countryName: string) {
+export async function getCitiesInACountry(
+	countryName: string,
+): Promise<Array<{ id: string; name: string }> | string> {
 	const id = await getId("country", countryName);
 	try {
 		const response = await fetcher(citiesInCountryQuery, {
@@ -22,7 +24,7 @@ export async function getCitiesInACountry(countryName: string) {
 		return result.data.allCities;
 	} catch (error: unknown) {
 		console.log(error);
-		return { error: "Failed to fetch data" };
+		return "Failed to fetch data";
 	}
 }
 
@@ -31,17 +33,19 @@ export async function getPlacesInACountry(
 	activityName?: string,
 ): Promise<string | PlaceType[]> {
 	try {
-		const cities: {
-			id: string;
-			name: string;
-		}[] = await getCitiesInACountry(countryName);
+		const data = await getCitiesInACountry(countryName);
+		if (typeof data === "string") return "Failed to get the cities";
 
 		const allPlaces: PlaceType[] = [];
 		console.log("--------------------------------------");
-		console.log(`Cities are: ${cities}`);
+		console.log(`Cities are: ${data}`);
 		await Promise.all(
-			cities.map(async (city) => {
-				const data = await getPlaces(city.name, city.id, activityName);
+			data.map(async (city) => {
+				const data = await getPlaces({
+					cityId: city.id,
+					cityName: city.name,
+					activityName,
+				});
 				console.log(`data in getPlaces in country: ${data}`);
 				if (typeof data !== "string") {
 					// Use spread operator to add all items from data
@@ -59,16 +63,51 @@ export async function getPlacesInACountry(
 	}
 }
 
-export async function getPlaces(
-	cityName?: string,
-	cityId?: string,
+export async function getPlacesInACity(
+	cityName: string,
+	countryName: string,
 	activityName?: string,
-): Promise<string | PlaceType[]> {
+): Promise<PlaceType[] | string> {
+	const data = await getCitiesInACountry(countryName);
+	if (typeof data === "string") {
+		const places = await getPlaces({
+			cityName,
+			activityName,
+		});
+		return places;
+	}
+	console.log(data);
+	const city = data.filter(
+		(city: { name: string; id: string }) => city.name === cityName,
+	);
+	if (city.length === 0) {
+		console.log("City not found");
+		return "City not found";
+	}
+	const places = await getPlaces({
+		cityId: city[0].id,
+		cityName,
+		activityName,
+	});
+	console.log(places);
+	return places;
+}
+
+export async function getPlaces({
+	cityName,
+	cityId,
+	activityName,
+}: { cityName?: string; cityId?: string; activityName?: string }): Promise<
+	string | PlaceType[]
+> {
+	let ctyId = "";
+	let aId = "";
+
 	if (!cityId && !cityName && !activityName) {
 		return "Atleast provide arguments.";
 	}
 	console.log(cityId, cityName, activityName);
-	let ctyId = "";
+
 	if (cityId) {
 		console.log("In city id");
 		ctyId = cityId;
@@ -77,11 +116,10 @@ export async function getPlaces(
 		ctyId = await getId("city", cityName.toLowerCase());
 	}
 	console.log(`city id is ${ctyId}`);
-	let aId = "";
+
 	if (activityName) {
 		aId = await getId("acitivity", activityName.toLowerCase());
 	}
-
 	const variables = {
 		filter: {
 			city: {
@@ -124,7 +162,7 @@ export async function getPlaces(
 		const places: PlaceType[] = [];
 
 		// console.log("Result from getPlaces(): ", result);
-		// console.log("Result.data: ", result.data.allPlaces[0]);
+		console.log("Result.data: ", result.data.allPlaces[0]);
 		result.data.allPlaces.map((place: PlaceDataReturnType) =>
 			places.push({
 				id: place.id,
