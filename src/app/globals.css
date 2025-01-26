@@ -12,11 +12,11 @@
 	:root {
 		--background: 0 0% 100%;
 		/* RGB 255 */
-		--secondary: 0 33% 97%;
+		--secondary: 0 100% 98%;
 		/* RGB 250 */
-		--tertiary: 0 20% 95%;
+		--tertiary: 0 0% 94%;
 		/* RGB 240 */
-		--muted: 0 14% 93%;
+		--muted: 0 0% 92%;
 		/* for hover states */
 
 		--foreground: 0 0% 0%;
@@ -65,11 +65,11 @@
 	.dark {
 		--background: 0 0% 0%;
 		/* RGB 0 */
-		--secondary: 0 17% 8%;
+		--secondary: 0 0% 6%;
 		/* RGB 15 */
-		--tertiary: 120 7% 11%;
+		--tertiary: 0 0% 11%;
 		/* RGB 26 */
-		--muted: 240 7% 14%;
+		--muted: 0 0% 14%;
 		/* for hover states, RGB 33 */
 
 		--foreground: 0 0% 94%;

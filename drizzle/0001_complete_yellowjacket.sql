@@ -1,0 +1,1 @@
+ALTER TABLE "Itinerary" ALTER COLUMN "chatId" DROP NOT NULL;

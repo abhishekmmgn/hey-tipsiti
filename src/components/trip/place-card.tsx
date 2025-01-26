@@ -13,46 +13,29 @@ import Image from "next/image";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Bookmark, X } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
-export function ItineraryCard(
+export default function PlaceCard(
 	props: PlaceType & {
 		isChatUI: boolean;
 		className?: string;
+		chatId?: string;
 	},
 ) {
-	const [saved, setSaved] = useState<undefined | boolean>(undefined);
+	const [saved, setSaved] = useState(false);
 
 	function saveItem() {
-		const placesArr = localStorage.getItem("places")?.split(",") || [];
-		const cleanArr = placesArr.filter(Boolean);
-		localStorage.setItem("places", [...cleanArr, props.id].toString());
-		// save to DB here
+		// addtoItenerary(props.id);
 		setSaved(true);
 	}
 
 	function removeItem() {
-		const placesArr = localStorage.getItem("places")?.split(",");
-		if (!placesArr) return;
-		const filteredArr = placesArr.filter((p) => p !== props.id);
-		localStorage.setItem("places", filteredArr.toString());
-		// remove from DB here
+		// removeFromItinerary(props.id);
 		setSaved(false);
 	}
-
-	useEffect(() => {
-		const placesArr = localStorage.getItem("places")?.split(",");
-		if (placesArr) {
-			const isSaved = placesArr.includes(props.id);
-			setSaved(isSaved);
-		} else {
-			setSaved(false);
-		}
-	}, [props.id]);
-
 	return (
-		<Card className={cn("h-fit w-full max-w-72 border", props.className)}>
-			<CardContent className="relative aspect-[5/4] rounded-t-xl">
+		<Card className={cn("h-fit w-full max-w-80 border", props.className)}>
+			<CardContent className="relative aspect-square rounded-t-xl">
 				<Image
 					src={props.image}
 					alt={props.name}
@@ -64,7 +47,7 @@ export function ItineraryCard(
 			<CardHeader className="space-y-3">
 				<div className="space-y-1.5">
 					<CardTitle>{props.name}</CardTitle>
-					<CardDescription className="line-clamp-3 text-secondary-foreground">
+					<CardDescription className="line-clamp-3 text-wrap text-secondary-foreground">
 						{props.description}
 					</CardDescription>
 				</div>

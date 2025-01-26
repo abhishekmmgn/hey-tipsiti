@@ -42,15 +42,28 @@ export const reservation = pgTable("Reservation", {
 
 export type Reservation = InferSelectModel<typeof reservation>;
 
-// export const itinerary = pgTable("Itinerary", {
-// 	id: uuid("id").primaryKey().notNull().defaultRandom(),
-// 	createdAt: timestamp("createdAt").notNull(),
-// 	places: json("places").notNull(),
-// 	hotels: json("hotels"),
-// 	reservations: json("reservations"),
-// 	chatId: uuid("chatId")
-// 		.notNull()
-// 		.references(() => chat.id),
-// });
+export const booking = pgTable("Booking", {
+	id: uuid("id").primaryKey().notNull().defaultRandom(),
+	createdAt: timestamp("createdAt").notNull(),
+	details: json("details").notNull(),
+	hasCompletedPayment: boolean("hasCompletedPayment").notNull().default(false),
+	userId: uuid()
+		.notNull()
+		.references(() => user.id),
+});
 
-// export type Itinerary = InferSelectModel<typeof itinerary>;
+export type Booking = InferSelectModel<typeof booking>;
+
+export const itinerary = pgTable("Itinerary", {
+	id: uuid("id").primaryKey().notNull().defaultRandom(),
+	createdAt: timestamp("createdAt").notNull(),
+	places: json("places").notNull(),
+	bookings: json("bookings"),
+	reservations: json("reservations"),
+	chatId: uuid("chatId").references(() => chat.id),
+	userId: uuid("userId")
+		.notNull()
+		.references(() => user.id),
+});
+
+export type Itinerary = InferSelectModel<typeof itinerary>;

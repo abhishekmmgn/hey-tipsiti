@@ -1,4 +1,4 @@
-// import { getItineraries } from "@/db/queries";
+import { getItineraries } from "@/db/queries";
 import createClientForServer from "@/lib/supabase/server";
 
 export async function GET() {
@@ -8,6 +8,10 @@ export async function GET() {
 	if (userRes.error) {
 		return Response.json({ error: "Not authenticated" });
 	}
-	// const data = await getItineraries(userRes.data.user.id);
-	// return Response.json(data);
+	const data = await getItineraries(userRes.data.user.id);
+	const formattedData = [];
+	data.map((itinerary) => {
+		formattedData.push(itinerary);
+	});
+	return Response.json(data);
 }

@@ -1,79 +1,31 @@
 "use client";
 
+import type { HotelCardType } from "@/lib/types";
 import { useChat } from "ai/react";
-import { differenceInHours, format } from "date-fns";
+import { ScrollArea, ScrollBar } from "../ui/scroll-area";
+import Image from "next/image";
+import { Star } from "lucide-react";
+import one from "../../../public/hotels/1.webp";
+import two from "../../../public/hotels/2.webp";
+import three from "../../../public/hotels/3.jpeg";
+import four from "../../../public/hotels/4.jpeg";
+import five from "../../../public/hotels/5.jpeg";
+import six from "../../../public/hotels/6.webp";
 
-const SAMPLE = {
-	flights: [
+const SAMPLE: { hotels: HotelCardType[] } = {
+	hotels: [
 		{
-			id: "result_1",
-			departure: {
-				cityName: "San Francisco",
-				airportCode: "SFO",
-				timestamp: "2024-05-19T18:00:00Z",
-			},
-			arrival: {
-				cityName: "Rome",
-				airportCode: "FCO",
-				timestamp: "2024-05-20T14:30:00Z",
-			},
-			airlines: ["United Airlines", "Lufthansa"],
-			priceInUSD: 1200.5,
-			numberOfStops: 1,
-		},
-		{
-			id: "result_2",
-			departure: {
-				cityName: "San Francisco",
-				airportCode: "SFO",
-				timestamp: "2024-05-19T17:30:00Z",
-			},
-			arrival: {
-				cityName: "Rome",
-				airportCode: "FCO",
-				timestamp: "2024-05-20T15:00:00Z",
-			},
-			airlines: ["British Airways"],
-			priceInUSD: 1350,
-			numberOfStops: 0,
-		},
-		{
-			id: "result_3",
-			departure: {
-				cityName: "San Francisco",
-				airportCode: "SFO",
-				timestamp: "2024-05-19T19:15:00Z",
-			},
-			arrival: {
-				cityName: "Rome",
-				airportCode: "FCO",
-				timestamp: "2024-05-20T16:45:00Z",
-			},
-			airlines: ["Delta Air Lines", "Air France"],
-			priceInUSD: 1150.75,
-			numberOfStops: 1,
-		},
-		{
-			id: "result_4",
-			departure: {
-				cityName: "San Francisco",
-				airportCode: "SFO",
-				timestamp: "2024-05-19T16:30:00Z",
-			},
-			arrival: {
-				cityName: "Rome",
-				airportCode: "FCO",
-				timestamp: "2024-05-20T13:50:00Z",
-			},
-			airlines: ["American Airlines", "Iberia"],
-			totalDurationInMinutes: 740,
-			priceInUSD: 1250.25,
-			numberOfStops: 1,
+			id: "h-002",
+			hotelName: "Ona Alborada",
+			location: "Costa Del Silencio, Spain",
+			priceInUSD: 123,
+			reviews: 5,
+			specs: "1 bedroom  - 2 twin beds, Living Room - 1 sofa bed",
 		},
 	],
 };
 
-export function ListFlights({
+export default function ListHotels({
 	chatId,
 	results = SAMPLE,
 }: {
@@ -86,66 +38,60 @@ export function ListFlights({
 		maxSteps: 5,
 	});
 
+	const images = [one, two, three, four, five, six];
 	return (
-		<div className="rounded-lg bg-tertiary px-4 py-1.5 flex flex-col">
-			{results.flights.map((flight) => (
-				<div
-					key={flight.id}
-					className="cursor-pointer flex flex-row border-b py-2 last-of-type:border-none group"
-					onClick={() => {
-						append({
-							role: "user",
-							content: `I would like to book the ${flight.airlines} one!`,
-						});
-					}}
-				>
-					<div className="flex flex-col w-full gap-0.5 justify-between">
-						<div className="flex flex-row gap-0.5 text-base sm:text-base font-medium group-hover:underline">
-							<div className="text">
-								{format(new Date(flight.departure.timestamp), "h:mm a")}
+		<div className="p-3 border bg-tertiary rounded-lg pr-0 sm:p-4 sm:pb-0">
+			<ScrollArea className="w-72 h-full xs:w-full xs:h-96">
+				<div className="flex gap-5 xs:flex-col">
+					{results.hotels.map((hotel, index) => (
+						// biome-ignore lint/a11y/useKeyWithClickEvents: <explanation>
+						<div
+							key={hotel.id}
+							className="p-3 border flex flex-col gap-4 rounded-lg cursor-pointer xs:flex-row w-72 xs:w-full last:mr-4 last:xs:mb-4
+							hover:bg-secondary/50
+							"
+							onClick={() => {
+								append({
+									role: "user",
+									content: `Please show rooms in ${hotel.hotelName}`,
+								});
+							}}
+						>
+							<div className="w-full relative aspect-[4/3] rounded-lg xs:w-1/2 sm:w-2/5">
+								<Image
+									src={index < images.length ? images[index] : images[0]}
+									alt="Hotel Image"
+									fill
+									sizes="364px"
+									className="object-cover object-top bg-secondary rounded-lg"
+								/>
 							</div>
-							<div className="no-skeleton">–</div>
-							<div className="text">
-								{format(new Date(flight.arrival.timestamp), "h:mm a")}
-							</div>
-						</div>
-						<div className="text w-fit hidden sm:flex text-sm text-tertiary-foreground flex-row gap-2">
-							<div>{flight.airlines.join(", ")}</div>
-						</div>
-						<div className="text sm:hidden text-xs sm:text-sm text-tertiary-foreground flex flex-row gap-2">
-							{flight.airlines.length} stops
-						</div>
-					</div>
-
-					<div className="flex flex-col gap-0.5 justify-between">
-						<div className="flex flex-row gap-2">
-							<div className="text-base sm:text-base">
-								{differenceInHours(
-									new Date(flight.arrival.timestamp),
-									new Date(flight.departure.timestamp),
-								)}{" "}
-								hr
-							</div>
-						</div>
-						<div className="text-xs sm:text-sm text-tertiary-foreground flex flex-row">
-							<div>{flight.departure.airportCode}</div>
-							<div>–</div>
-							<div>{flight.arrival.airportCode}</div>
-						</div>
-					</div>
-
-					<div className="flex flex-col w-32 items-end gap-0.5">
-						<div className="flex flex-row gap-2">
-							<div className="text-base sm:text-base text-emerald-600 dark:text-emerald-500">
-								${flight.priceInUSD}
+							<div className="w-full xs:w-1/2 sm:w-3/5 flex flex-col justify-between">
+								<div className="space-y-1">
+									<div className="flex justify-between items-center gap-2">
+										<p className="text-lg font-semibold">{hotel.hotelName}</p>
+										<div className="flex items-center gap-1 text-tertiary-foreground">
+											{hotel.reviews}
+											<Star className="size-4" />
+										</div>
+									</div>
+									<p className="text-wrap text-secondary-foreground">
+										{hotel.specs}
+									</p>
+								</div>
+								<div className="space-y-1.5 text-tertiary-foreground">
+									<p>{hotel.location}</p>
+									<p className="text-green-500">
+										${hotel.priceInUSD.toFixed(2)}
+									</p>
+								</div>
 							</div>
 						</div>
-						<div className="text-xs sm:text-sm text-tertiary-foreground flex flex-row">
-							Round Trip
-						</div>
-					</div>
+					))}
 				</div>
-			))}
+				<ScrollBar orientation="horizontal" className="xs:hidden" />
+				<ScrollBar orientation="vertical" className="hidden xs:static" />
+			</ScrollArea>
 		</div>
 	);
 }

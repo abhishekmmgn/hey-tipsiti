@@ -76,9 +76,10 @@ export async function getPlacesInACity(
 		});
 		return places;
 	}
-	console.log(data);
+	// console.log(data);
 	const city = data.filter(
-		(city: { name: string; id: string }) => city.name === cityName,
+		(city: { name: string; id: string }) =>
+			city.name.toLowerCase() === cityName.toLowerCase(),
 	);
 	if (city.length === 0) {
 		console.log("City not found");
@@ -89,7 +90,7 @@ export async function getPlacesInACity(
 		cityName,
 		activityName,
 	});
-	console.log(places);
+	// console.log(places);
 	return places;
 }
 
@@ -162,7 +163,7 @@ export async function getPlaces({
 		const places: PlaceType[] = [];
 
 		// console.log("Result from getPlaces(): ", result);
-		console.log("Result.data: ", result.data.allPlaces[0]);
+		// console.log("Result.data: ", result.data.allPlaces[0]);
 		result.data.allPlaces.map((place: PlaceDataReturnType) =>
 			places.push({
 				id: place.id,
@@ -264,7 +265,7 @@ export async function generateSampleSeatSelection({
 }) {
 	const { object: rows } = await generateObject({
 		model: geminiFlashModel,
-		prompt: `Simulate available seats for flight number ${flightNumber}, 6 seats on each row and 5 rows in total, adjust pricing based on location of seat`,
+		prompt: `Simulate available seats for flight number ${flightNumber}, 6 seats on each row and 5 rows in total making 30 total seats, adjust pricing based on location of seat. Make sure some seats for each row are already booked.`,
 		output: "array",
 		schema: z.array(
 			z.object({
@@ -272,7 +273,7 @@ export async function generateSampleSeatSelection({
 				priceInUSD: z
 					.number()
 					.describe("Seat price in US dollars, less than $99"),
-				isAvailable: z.boolean(),
+				isAvailable: z.boolean().describe("Seat availability status"),
 			}),
 		),
 	});
@@ -310,4 +311,88 @@ export async function generateReservationPrice(props: {
 	});
 
 	return reservation;
+}
+
+export async function generateSampleHotelsSearchResults({
+	city,
+}: {
+	city: string;
+}) {
+	const { object: hotelsSearchResults } = await generateObject({
+		model: geminiFlashModel,
+		prompt: `Generate search results for hotels in ${city}, limit to 5 results`,
+		output: "array",
+		schema: z.object({
+			id: z
+				.string()
+				.describe("Unique identifier for the hotel, like HA123, HA31, etc."),
+			hotelName: z
+				.string()
+				.describe(
+					"Name of the hotel. Consider local language of the city for the name.",
+				),
+			location: z
+				.string()
+				.describe(
+					"Location of the hotel, place and the city like XYZ Street, Brooklyn, New York",
+				),
+			specs: z
+				.string()
+				.describe(
+					"Special features in the hotel, like Infinity view pool, sea-facing rooms, etc",
+				),
+			priceInUSD: z.number().describe("Hotel price in US dollars"),
+			reviews: z.number().describe("Rating of the hotel. Out of 5."),
+		}),
+	});
+
+	return { hotels: hotelsSearchResults };
+}
+
+export async function generateSampleRoomsSelection({
+	hotelId,
+}: {
+	hotelId: string;
+}) {
+	const { object: rows } = await generateObject({
+		model: geminiFlashModel,
+		prompt: `Simulate available rooms for hotel with id ${hotelId}, 5 total variants of the room, adjust pricing based on the room`,
+		output: "array",
+		schema: z.array(
+			z.object({
+				roomNumber: z.string().describe("Room number, e.g., 12A, 15C etc"),
+				roomDetails: z
+					.string()
+					.describe(
+						"Features like, 3 beds, 2 bathroom or 1 bed, 1 bathroom, sea-facing view, etc.",
+					),
+				priceInUSD: z
+					.number()
+					.describe("Room cost in US dollars, between $99 to $1999"),
+				availableRooms: z
+					.number()
+					.describe("Number of rooms available of this type"),
+			}),
+		),
+	});
+
+	return { rooms: rows[0] };
+}
+
+export async function generateBookingPrice(props: {
+	hotelName: string;
+	location: string;
+	guestName: string;
+	roomNumber: string;
+	roomDetails: string;
+}) {
+	const { object: booking } = await generateObject({
+		model: geminiFlashModel,
+		prompt: `Generate price for the following booking \n\n ${JSON.stringify(props, null, 2)}`,
+		schema: z.object({
+			totalPriceInUSD: z.number().describe("Total booking price in US dollars"),
+		}),
+	});
+
+	return booking;
 }

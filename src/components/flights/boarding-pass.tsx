@@ -4,7 +4,7 @@ import { FlashlightIcon, PlaneTakeoffIcon } from "lucide-react";
 const SAMPLE = {
 	reservationId: "RES123456",
 	flightNumber: "DL1",
-	seat: "1C",
+	seats: ["1C"],
 	departure: {
 		cityName: "London",
 		airportCode: "LHR",
@@ -55,7 +55,7 @@ export function DisplayBoardingPass({ boardingPass = SAMPLE }) {
 
 			<div className="h-px grow bg-rose-600/20" />
 
-			<div className="flex flex-row justify-between">
+			<div className="grid grid-cols-2 xs:flex flex-row flex-wrap justify-between gap-y-3">
 				<div className="flex flex-col gap-0.5">
 					<div className="text-rose-900 text-sm font-medium sm:text-base">
 						Passenger
@@ -71,6 +71,15 @@ export function DisplayBoardingPass({ boardingPass = SAMPLE }) {
 					</div>
 					<div className="text-lg text-rose-700">
 						{boardingPass.departure.gate}
+					</div>
+				</div>
+
+				<div className="flex flex-col gap-0.5">
+					<div className="text-rose-900 text-sm font-medium sm:text-base">
+						Seats
+					</div>
+					<div className="text-lg text-rose-700">
+						{boardingPass.seats.toString()}
 					</div>
 				</div>
 

@@ -1,6 +1,6 @@
 {
-  "id": "fbebb8a5-1563-49a7-9eec-712f49d991c7",
-  "prevId": "00000000-0000-0000-0000-000000000000",
+  "id": "7c0e5ca6-2fca-4c1d-af9f-36f55c950c88",
+  "prevId": "fbebb8a5-1563-49a7-9eec-712f49d991c7",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -154,7 +154,7 @@
           "name": "chatId",
           "type": "uuid",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
         "userId": {
           "name": "userId",

@@ -1,4 +1,4 @@
-import { ItineraryCard } from "@/components/trip/itinerary-card";
+import PlaceCard from "@/components/trip/place-card";
 import { places } from "@/lib/data";
 import Link from "next/link";
 
@@ -9,7 +9,7 @@ export default async function Page() {
 			<div className="w-fit justify-center mx-auto grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
 				{places.map((place) => (
 					<Link href={`/itineraries/${place.id}`} key={place.id}>
-						<ItineraryCard {...place} isChatUI={false} className="max-w-sm" />
+						<PlaceCard {...place} isChatUI={false} className="max-w-sm" />
 					</Link>
 				))}
 			</div>

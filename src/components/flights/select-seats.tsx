@@ -57,7 +57,7 @@ export function SelectSeats({
 		maxSteps: 5,
 	});
 
-	console.log(availability);
+	// console.log(availability);
 	const seats: Seat[][] = [[]];
 	availability.seats.forEach((seat, index) => {
 		const rowIndex = Math.floor(index / 6);
@@ -101,9 +101,10 @@ export function SelectSeats({
 										});
 									}}
 									className={cx(
-										"cursor-pointer group relative size-8 sm:size-10 flex-shrink-0 flex rounded-sm flex-row items-center justify-center",
+										"group relative size-8 sm:size-10 flex-shrink-0 flex rounded-sm flex-row items-center justify-center",
 										{
-											"bg-blue-500 hover:bg-pink-500": seat.isAvailable,
+											"bg-blue-500 hover:bg-blue-400 cursor-pointer ":
+												seat.isAvailable,
 											"bg-gray-500 cursor-not-allowed": !seat.isAvailable,
 										},
 									)}
@@ -113,7 +114,7 @@ export function SelectSeats({
 										className={cx(
 											"absolute -top-1 h-2 w-full scale-125 rounded-sm",
 											{
-												"bg-blue-600 group-hover:bg-pink-600": seat.isAvailable,
+												"bg-blue-600 group-hover:bg-blue-500": seat.isAvailable,
 												"bg-zinc-600 cursor-not-allowed": !seat.isAvailable,
 											},
 										)}

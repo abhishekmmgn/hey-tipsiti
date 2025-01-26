@@ -14,6 +14,10 @@ import { FlightStatus } from "@/components/flights/flight-status";
 import { ListFlights } from "@/components/flights/list-flights";
 import { SelectSeats } from "@/components/flights/select-seats";
 import { VerifyPayment } from "@/components/flights/verify-payment";
+import ListHotels from "./hotels/list-hotels";
+import SelectRooms from "./hotels/select-rooms";
+import CreateBooking from "./hotels/create-booking";
+import { DisplayReceipt } from "./hotels/display-reciept";
 
 export const Message = ({
 	chatId,
@@ -30,7 +34,7 @@ export const Message = ({
 }) => {
 	return (
 		<motion.div
-			className="flex items-center gap-4 w-full md:px-0 first-of-type:pt-20"
+			className="flex gap-4 w-full md:px-0 first-of-type:pt-20"
 			initial={{ y: 5, opacity: 0 }}
 			animate={{ y: 0, opacity: 1 }}
 		>
@@ -60,9 +64,9 @@ export const Message = ({
 
 								console.log(
 									toolInvocation.toolName,
-									toolInvocation.args,
+									" ->> ",
 									toolInvocation.result,
-									toolInvocation.state,
+									// toolInvocation.state,
 								);
 
 								return (
@@ -88,11 +92,22 @@ export const Message = ({
 												<CreateReservation reservation={result} />
 											)
 										) : toolName === "authorizePayment" ? (
-											<AuthorizePayment intent={result} />
+											<AuthorizePayment
+												reservationId={result.id}
+												type={result.type}
+											/>
 										) : toolName === "displayBoardingPass" ? (
-											<DisplayBoardingPass boardingPass={result} />
+											<DisplayBoardingPass boardingPass={result.boardingPass} />
 										) : toolName === "verifyPayment" ? (
 											<VerifyPayment result={result} />
+										) : toolName === "displayBookingReciept" ? (
+											<DisplayReceipt receipt={result} />
+										) : toolName === "findHotels" ? (
+											<ListHotels chatId={chatId} results={result} />
+										) : toolName === "selectRooms" ? (
+											<SelectRooms chatId={chatId} availability={result} />
+										) : toolName === "createBooking" ? (
+											<CreateBooking booking={result} />
 										) : (
 											<div>{JSON.stringify(result, null, 2)}</div>
 										)}
@@ -128,6 +143,14 @@ export const Message = ({
 										<p>Getting latest information about seats...</p>
 									) : toolName === "createReservation" ? (
 										<p>Creating reservation...</p>
+									) : toolName === "findHotels" ? (
+										<p>Finding best hotels...</p>
+									) : toolName === "selectRooms" ? (
+										<p>Getting latest information about the rooms...</p>
+									) : toolName === "createBooking" ? (
+										<p>Booking your rooms...</p>
+									) : toolName === "displayBookingReciept" ? (
+										<p>Getting your receipt...</p>
 									) : toolName === "authorizePayment" ? (
 										<p>Verifying payment...</p>
 									) : toolName === "displayBoardingPass" ? (

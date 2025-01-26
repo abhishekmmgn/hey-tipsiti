@@ -8,8 +8,9 @@
     "start": "next start",
     "lint": "pnpm dlx @biomejs/biome lint ./src",
     "format": "pnpm dlx @biomejs/biome format ./src --write",
-    "db:generate": "drizzle-kit generate:pg --schema ./src/db/schema.ts --out=./src/db/migrations",
-    "db:migrate": "pnpm dlx ./src/db/migrate.ts"
+    "db:generate": "pnpm exec drizzle-kit generate",
+    "db:migrate": "pnpm exec drizzle-kit migrate",
+    "db:push": "pnpm exec drizzle-kit push"
   },
   "dependencies": {
     "@ai-sdk/google": "^1.0.17",
@@ -36,7 +37,6 @@
     "@tanstack/react-query-next-experimental": "^5.64.2",
     "@vercel/blob": "^0.27.1",
     "ai": "^4.1.1",
-    "bcrypt-ts": "^5.0.3",
     "class-variance-authority": "^0.7.1",
     "classnames": "^2.5.1",
     "clsx": "^2.1.1",
@@ -48,7 +48,6 @@
     "lucide-react": "^0.471.1",
     "negotiator": "^1.0.0",
     "next": "15.1.4",
-    "next-auth": "^4.24.11",
     "next-themes": "^0.4.4",
     "postgres": "^3.4.5",
     "react": "^19.0.0",

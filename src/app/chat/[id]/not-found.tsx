@@ -14,7 +14,7 @@ export default function Page() {
 					href="/chat"
 					className="w-fit mx-auto mt-2 text-primary text-lg underline-link"
 				>
-					Return back
+					Create new chat
 				</Link>
 			</div>
 		</div>

@@ -3,16 +3,24 @@ import { z } from "zod";
 import { geminiProModel } from "@/ai";
 import {
 	getCitiesInACountry,
-	getPlaces,
 	getPlacesInACountry,
 	generateReservationPrice,
 	generateSampleFlightSearchResults,
 	generateSampleFlightStatus,
 	generateSampleSeatSelection,
 	getPlacesInACity,
+	generateSampleHotelsSearchResults,
+	generateBookingPrice,
+	generateSampleRoomsSelection,
 } from "@/ai/actions";
 import { activities } from "@/lib/constants";
-import { createReservation, getReservationById, saveChat } from "@/db/queries";
+import {
+	createBooking,
+	createReservation,
+	getBookingById,
+	getReservationById,
+	saveChat,
+} from "@/db/queries";
 import { generateUUID } from "@/lib/utils";
 import createClientForServer from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
@@ -50,7 +58,7 @@ export async function POST(request: Request) {
       - When city is final, ask their boarding city and show the flights.
       - Also ask if they want suggestions for the hotels in the destination city.
       - If the user is breaking the flow, let it break.
-    - After every tool call, pretend you're showing the result to the user and keep your response limited to a phrase.
+    - After every tool call, if it is required, pretend you're showing the summary of the result to the user and keep your response limited to a phrase.
     - Today's date is ${new Date().toLocaleDateString()}.
     - Ask follow up questions to nudge user into the optimal flow
     - Make sure to match the relevant names when giving the arguments, like if the user typed 'parise' instead of paris or barcelona instead of Barcelona, send the correct name as the argument to the tools.
@@ -74,9 +82,9 @@ export async function POST(request: Request) {
       - search for hotels
       - choose hotel
       - select rooms
-      - book room (confirm the user too)
+      - book the room (take confirmation as well)
       - authorize payment (requires user consent, wait for user to finish payment and let you know when done)
-      - display reciept
+      - display reciept (DO NOT display reciept without verifying payment)
   `,
 		messages: coreMessages,
 		tools: {
@@ -139,7 +147,6 @@ export async function POST(request: Request) {
 					const places = await getPlacesInACountry(countryName, activityName);
 					return places;
 				},
-				// getHotels:  {}
 			},
 			getWeather: {
 				description: "Get the current weather at a location",
@@ -169,6 +176,113 @@ export async function POST(request: Request) {
 					});
 
 					return flightStatus;
+				},
+			},
+			findHotels: {
+				description: "Search for hotels based on the given parameters",
+				parameters: z.object({
+					city: z.string().describe("City"),
+				}),
+				execute: async ({ city }) => {
+					const results = await generateSampleHotelsSearchResults({
+						city,
+					});
+
+					return results;
+				},
+			},
+			selectRooms: {
+				description: "Select room",
+				parameters: z.object({
+					hotelId: z.string().describe("Unique id of the hotel"),
+				}),
+				execute: async ({ hotelId }) => {
+					const rooms = await generateSampleRoomsSelection({ hotelId });
+					return rooms;
+				},
+			},
+			createBooking: {
+				description: "Display pending hotel booking details",
+				parameters: z.object({
+					hotelName: z.string().describe("Name of the hotel"),
+					location: z.string().describe("Location of the hotel"),
+					guestName: z.string().describe("Name of the guest"),
+					roomDetails: z.string().describe("Details of the room"),
+					roomNumber: z.string().describe("Room number"),
+				}),
+				execute: async (props) => {
+					const { totalPriceInUSD } = await generateBookingPrice(props);
+					const id = generateUUID();
+					await createBooking({
+						id,
+						userId,
+						details: { ...props, totalPriceInUSD },
+					});
+
+					return { id, ...props, totalPriceInUSD };
+				},
+			},
+			displayBookingReciept: {
+				description: "Display a receipt of the booking",
+				parameters: z.object({
+					id: z.string().describe("Unique identifier for the booking"),
+					guestName: z.string().describe("Name of the guest, in title case"),
+					roomNumber: z.string().describe("Room Number"),
+					hotelName: z.string().describe("Name of the hotel, in title case"),
+					location: z
+						.string()
+						.describe("Location of the hotel, place and the city"),
+					roomDetails: z
+						.string()
+						.describe("Details of the room, like 3BHK, pool, etc"),
+				}),
+				// make it
+				execute: async ({ id }) => {
+					const booking = await getBookingById({ id });
+					return { booking };
+				},
+			},
+			authorizePayment: {
+				description:
+					"User will enter credentials to authorize payment, wait for user to repond when they are done",
+				parameters: z.object({
+					id: z
+						.string()
+						.describe(
+							"Unique identifier for the booking the hotel or flight reservation",
+						),
+					type: z.string().describe("Type of reservation: 'hotel' or 'flight'"),
+				}),
+				execute: async ({
+					id,
+					type,
+				}: { id: string; type: "hotel" | "flight" }) => {
+					return { id, type };
+				},
+			},
+			verifyPayment: {
+				description: "Verify payment status",
+				parameters: z.object({
+					id: z
+						.string()
+						.describe(
+							"Unique identifier for the booking the hotel or flight reservation",
+						),
+					type: z.string().describe("Type: 'hotel' or 'flight'"),
+				}),
+				execute: async ({
+					id,
+					type,
+				}: { id: string; type: "hotel" | "flight" }) => {
+					const reservation =
+						type === "hotel"
+							? await getBookingById({ id })
+							: await getReservationById({ id });
+
+					if (reservation.hasCompletedPayment) {
+						return { hasCompletedPayment: true };
+					}
+					return { hasCompletedPayment: false };
 				},
 			},
 			searchFlights: {
@@ -229,34 +343,6 @@ export async function POST(request: Request) {
 					return { id, ...props, totalPriceInUSD };
 				},
 			},
-			authorizePayment: {
-				description:
-					"User will enter credentials to authorize payment, wait for user to repond when they are done",
-				parameters: z.object({
-					reservationId: z
-						.string()
-						.describe("Unique identifier for the reservation"),
-				}),
-				execute: async ({ reservationId }) => {
-					return { reservationId };
-				},
-			},
-			verifyPayment: {
-				description: "Verify payment status",
-				parameters: z.object({
-					reservationId: z
-						.string()
-						.describe("Unique identifier for the reservation"),
-				}),
-				execute: async ({ reservationId }) => {
-					const reservation = await getReservationById({ id: reservationId });
-
-					if (reservation.hasCompletedPayment) {
-						return { hasCompletedPayment: true };
-					}
-					return { hasCompletedPayment: false };
-				},
-			},
 			displayBoardingPass: {
 				description: "Display a boarding pass",
 				parameters: z.object({
@@ -285,24 +371,27 @@ export async function POST(request: Request) {
 						gate: z.string().describe("Arrival gate"),
 					}),
 				}),
-				execute: async (boardingPass) => {
-					return boardingPass;
+				execute: async ({ reservationId }) => {
+					const reservation = await getReservationById({ id: reservationId });
+					return { boardingPass: reservation.details };
 				},
 			},
 		},
-		onFinish: async () => {
-			// console.log(responseMessages)
+		onFinish: async (res) => {
 			try {
 				await saveChat({
 					id,
-					messages: [...coreMessages],
-					// messages: [...coreMessages, ...responseMessages],
+					messages: [...coreMessages, ...res.response.messages],
 					userId,
 				});
+				console.log("----------------------------------------");
 				console.log("chat saved");
+				console.log("----------------------------------------");
 			} catch (error) {
+				console.log("----------------------------------------");
 				console.log(error);
 				console.error("Failed to save chat");
+				console.log("----------------------------------------");
 			}
 		},
 		experimental_telemetry: {

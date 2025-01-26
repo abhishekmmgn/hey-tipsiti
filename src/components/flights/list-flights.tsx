@@ -89,6 +89,7 @@ export function ListFlights({
 	return (
 		<div className="rounded-lg bg-tertiary px-4 py-1.5 flex flex-col">
 			{results.flights.map((flight) => (
+				// biome-ignore lint/a11y/useKeyWithClickEvents: <explanation>
 				<div
 					key={flight.id}
 					className="cursor-pointer flex flex-row border-b py-2 last-of-type:border-none group"

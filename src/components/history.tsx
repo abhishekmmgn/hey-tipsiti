@@ -5,7 +5,7 @@ import cx from "classnames";
 import Link from "next/link";
 import { useParams, usePathname } from "next/navigation";
 import { useState } from "react";
-import { fetcher, getTitleFromChat } from "@/lib/utils";
+import { fetcher } from "@/lib/utils";
 import { InfoIcon, MenuIcon, PencilEditIcon } from "./icons";
 import { Button } from "@/components/ui/button";
 import {
@@ -23,18 +23,28 @@ export default function History() {
 	const { id } = useParams();
 	const pathname = usePathname();
 
+	if (!pathname.includes("/chat")) {
+		return null;
+	}
 	const [isHistoryVisible, setIsHistoryVisible] = useState(false);
 
 	const { data: history, isLoading } = useQuery({
 		queryKey: ["history"],
 		queryFn: async () => {
-			const data = await fetcher("/api/history");
-			return data;
+			const data = await fetcher(
+				`${process.env.NEXT_PUBLIC_SITE_URL}/api/history`,
+			);
+
+			const formattedData: Array<{ id: string; message: string }> = [];
+			data.map((chat: Chat) => {
+				formattedData.push({
+					id: chat.id,
+					message: chat.messages[0].content,
+				});
+			});
+			return formattedData;
 		},
 	});
-	if (!pathname.includes("/chat")) {
-		return null;
-	}
 	return (
 		<>
 			<Button
@@ -79,44 +89,42 @@ export default function History() {
 								<PencilEditIcon size={14} />
 							</Link>
 						</Button>
-						<div className="mt-2 h-[calc(100dvh-124px)]">
-							<ScrollArea className="w-full h-full flex flex-col space-y-1">
-								{!isLoading && history?.length === 0 ? (
-									<div className="text-tertiary-foreground h-dvh w-full flex flex-row justify-center items-center text-sm gap-2">
-										<InfoIcon />
-										<div>No chats found</div>
-									</div>
-								) : null}
-								{isLoading ? (
-									<div className="flex flex-col">
-										{[44, 32, 28, 52].map((item) => (
-											<div key={item} className="p-2 my-[2px]">
-												<div
-													className={`w-${item} h-[20px] rounded-md animate-pulse`}
-												/>
-											</div>
-										))}
-									</div>
-								) : null}
-								<div className="space-y-0.5">
-									{history?.map((chat: Chat) => (
-										<Button
-											asChild
-											variant="ghost"
-											className={`justify-start ${chat.id === id ? "bg-tertiary text-primary" : "hover:text-secondary-foreground hover:bg-secondary"}`}
-											key={chat.id}
-										>
-											<Link
-												href={`/chat/${chat.id}`}
-												className="text-ellipsis overflow-clip text-left py-2 pl-2 rounded-lg"
-											>
-												{getTitleFromChat(chat)}
-											</Link>
-										</Button>
+						<ScrollArea className="mt-2 w-full h-full flex flex-col space-y-1">
+							{!isLoading && history?.length === 0 ? (
+								<div className="text-tertiary-foreground mt-80 w-full flex flex-row justify-center items-center text-sm gap-2">
+									<InfoIcon />
+									<div>No chats found</div>
+								</div>
+							) : null}
+							{isLoading ? (
+								<div className="flex flex-col">
+									{[44, 32, 28, 52].map((item) => (
+										<div key={item} className="p-2 my-[2px]">
+											<div
+												className={`w-${item} h-[20px] rounded-md animate-pulse`}
+											/>
+										</div>
 									))}
 								</div>
-							</ScrollArea>
-						</div>
+							) : null}
+							<div className="space-y-0.5">
+								{history?.map((item) => (
+									<Button
+										asChild
+										variant="ghost"
+										className={`max-w-72 justify-start ${item.id === id ? "bg-secondary text-primary" : "hover:text-secondary-foreground hover:bg-secondary"}`}
+										key={item.id}
+									>
+										<Link
+											href={`/chat/${item.id}`}
+											className="text-ellipsis overflow-clip text-left py-2 pl-2 rounded-lg"
+										>
+											{item.message}
+										</Link>
+									</Button>
+								))}
+							</div>
+						</ScrollArea>
 					</div>
 				</SheetContent>
 			</Sheet>

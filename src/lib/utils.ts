@@ -1,12 +1,12 @@
 import {
-	CoreMessage,
-	CoreToolMessage,
+	type CoreMessage,
+	type CoreToolMessage,
 	generateId,
-	Message,
-	ToolInvocation,
+	type Message,
+	type ToolInvocation,
 } from "ai";
 
-import { Chat } from "@/db/schema";
+import type { Chat } from "@/db/schema";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 
@@ -51,7 +51,7 @@ export function getLocalStorage(key: string) {
 }
 
 export function generateUUID(): string {
-	return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function (c) {
+	return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, (c) => {
 		const r = (Math.random() * 16) | 0;
 		const v = c === "x" ? r : (r & 0x3) | 0x8;
 		return v.toString(16);
@@ -103,7 +103,7 @@ export function convertToUIMessages(
 		}
 
 		let textContent = "";
-		let toolInvocations: Array<ToolInvocation> = [];
+		const toolInvocations: Array<ToolInvocation> = [];
 
 		if (typeof message.content === "string") {
 			textContent = message.content;
@@ -131,15 +131,4 @@ export function convertToUIMessages(
 
 		return chatMessages;
 	}, []);
-}
-
-export function getTitleFromChat(chat: Chat) {
-	const messages = convertToUIMessages(chat.messages as Array<CoreMessage>);
-	const firstMessage = messages[0];
-
-	if (!firstMessage) {
-		return "Untitled";
-	}
-
-	return firstMessage.content;
 }

@@ -11,24 +11,30 @@ import { Input } from "@/components/ui/input";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 export function AuthorizePayment({
-	intent = { reservationId: "sample-uuid" },
+	type,
+	reservationId,
 }: {
-	intent?: { reservationId: string };
+	type: "hotel" | "flight";
+	reservationId: string;
 }) {
 	const [input, setInput] = useState("");
 	const queryClient = useQueryClient();
 
+	console.log(`type of reservation is ${type} and ${reservationId}.`);
+
 	const { data: reservation } = useQuery({
-		queryKey: ["reservation", intent.reservationId],
+		queryKey: ["reservation", reservationId],
 		queryFn: async () => {
-			const data = await fetcher(`/api/reservation?id=${intent.reservationId}`);
+			const data = await fetcher(
+				`/api/reservation?id=${reservationId}&type=${type}`,
+			);
 			return data;
 		},
 	});
 	const mutation = useMutation({
 		mutationFn: async (magicWord: string) => {
 			const response = await fetch(
-				`/api/reservation?id=${intent.reservationId}`,
+				`/api/reservation?id=${reservationId}&type=${type}`,
 				{
 					method: "PATCH",
 					headers: {
@@ -47,7 +53,7 @@ export function AuthorizePayment({
 		},
 		onSuccess: () => {
 			queryClient.invalidateQueries({
-				queryKey: ["reservation", intent.reservationId],
+				queryKey: ["reservation", reservationId],
 			});
 		},
 		onError: (error) => {

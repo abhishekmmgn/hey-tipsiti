@@ -11,6 +11,20 @@ import { ArrowUpIcon, StopIcon } from "@/components/icons";
 import useWindowSize from "@/hooks/use-window-size";
 import { Button } from "@/components/ui/button";
 import { useRouter, useSearchParams } from "next/navigation";
+import { motion } from "framer-motion";
+
+const suggestedActions = [
+	{
+		title: "Help me plan a 3 day trip",
+		label: "to Spain starting tmrw",
+		action: "Help me plan a 3 day trip to Spain starting tmrw",
+	},
+	{
+		title: "Can you show me flights from",
+		label: "Berlin to France?",
+		action: "Can you show me flights from Berlin to France?",
+	},
+];
 
 type Props = {
 	input: string;
@@ -40,6 +54,7 @@ export default function MultimodalInput({
 	handleSubmit,
 	className,
 	paramsMessage,
+	messages,
 	append,
 }: Props) {
 	const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -75,54 +90,90 @@ export default function MultimodalInput({
 	}
 
 	return (
-		<form
-			onSubmit={handleSubmit}
-			className={cn(className, "relative sm:inset-x-auto")}
-		>
-			<Textarea
-				ref={textareaRef}
-				placeholder="Send a message..."
-				value={input}
-				onChange={handleInput}
-				rows={3}
-				className="resize-none h-24 overflow-hidden rounded-lg text-base border-none"
-				onKeyDown={(event) => {
-					if (event.key === "Enter" && !event.shiftKey) {
-						event.preventDefault();
+		<div className="w-full">
+			{messages.length === 0 && (
+				<div className="pb-4 grid sm:grid-cols-2 gap-4 w-full md:px-0 mx-auto max-w-2xl cursor-pointer">
+					{suggestedActions.map((suggestedAction, index) => (
+						<motion.div
+							initial={{ opacity: 0, y: 20 }}
+							animate={{ opacity: 1, y: 0 }}
+							exit={{ opacity: 0, y: 20 }}
+							transition={{ delay: 0.05 * index }}
+							key={index.toString()}
+							className={index > 1 ? "hidden sm:block" : "block"}
+						>
+							{/* biome-ignore lint/a11y/useKeyWithClickEvents: <explanation> */}
+							<div
+								onClick={async () => {
+									append({
+										role: "user",
+										content: suggestedAction.action,
+									});
+								}}
+								className="bg-secondary hover:bg-tertiary/80 w-full text-left rounded-lg p-3 text-sm transition-colors flex flex-col"
+							>
+								<span className="font-medium text-secondary-foreground">
+									{suggestedAction.title}
+								</span>
+								<span className="text-tertiary-foreground">
+									{suggestedAction.label}
+								</span>
+							</div>
+						</motion.div>
+					))}
+				</div>
+			)}
+			<form
+				onSubmit={handleSubmit}
+				className={cn(className, "relative sm:inset-x-auto")}
+			>
+				<Textarea
+					ref={textareaRef}
+					placeholder="Send a message..."
+					value={input}
+					onChange={handleInput}
+					rows={3}
+					className="resize-none h-24 overflow-hidden rounded-lg text-base border-none"
+					onKeyDown={(event) => {
+						if (event.key === "Enter" && !event.shiftKey) {
+							event.preventDefault();
 
-						if (isLoading) {
-							toast.error("Please wait for the model to finish its response!");
-						} else {
-							submitForm();
+							if (isLoading) {
+								toast.error(
+									"Please wait for the model to finish its response!",
+								);
+							} else {
+								submitForm();
+							}
 						}
-					}
-				}}
-			/>
-			<div className="flex justify-end gap-2 absolute bottom-2 right-2">
-				{isLoading ? (
-					<Button
-						className="rounded-full h-fit absolute bottom-2 right-2 shadow-none"
-						onClick={(event) => {
-							event.preventDefault();
-							stop();
-						}}
-					>
-						<StopIcon size={14} />
-					</Button>
-				) : (
-					<Button
-						className="rounded-full h-fit absolute bottom-2 right-2 shadow-none"
-						onClick={(event) => {
-							event.preventDefault();
-							submitForm();
-						}}
-						disabled={input.length === 0}
-					>
-						<ArrowUpIcon size={14} />
-					</Button>
-				)}
-			</div>
-		</form>
+					}}
+				/>
+				<div className="flex justify-end gap-2 absolute bottom-2 right-2">
+					{isLoading ? (
+						<Button
+							className="rounded-full h-fit absolute bottom-2 right-2 shadow-none"
+							onClick={(event) => {
+								event.preventDefault();
+								stop();
+							}}
+						>
+							<StopIcon size={14} />
+						</Button>
+					) : (
+						<Button
+							className="rounded-full h-fit absolute bottom-2 right-2 shadow-none"
+							onClick={(event) => {
+								event.preventDefault();
+								submitForm();
+							}}
+							disabled={input.length === 0}
+						>
+							<ArrowUpIcon size={14} />
+						</Button>
+					)}
+				</div>
+			</form>
+		</div>
 	);
 }
 
