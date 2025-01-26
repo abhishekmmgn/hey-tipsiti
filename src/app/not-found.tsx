@@ -2,7 +2,7 @@ import Link from "next/link";
 
 export default function Page() {
 	return (
-		<div className="h-screen w-full grid items-start pt-36">
+		<div className="h-[calc(100dvh-56px)] w-full grid items-start pt-36">
 			<div className="text-center grid gap-y-3">
 				<div className="text-center grid gap-y-3">
 					<h1 className="home-h3 text-medium">404</h1>

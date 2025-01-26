@@ -31,18 +31,18 @@ export function DisplayReceipt({ booking }: { booking: typeof SAMPLE }) {
 			<Separator className="bg-violet-400" />
 			<div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6">
 				<div className="flex flex-col gap-1">
-					<div className="text sm:text-base text-sm font-medium text-violet-600">
+					<div className="font-medium text-sm sm:text-base text-violet-700">
 						Room Number
 					</div>
-					<div className="sm:text-base text-sm text-violet-700">
+					<div className="text-lg text-violet-600">
 						{booking.details.roomNumber}
 					</div>
 				</div>
 				<div className="flex flex-col gap-1">
-					<div className="text sm:text-base text-sm font-medium text-violet-600">
+					<div className="font-medium text-sm sm:text-base text-violet-700">
 						Room Details
 					</div>
-					<div className="sm:text-base text-sm text-violet-700">
+					<div className="text-lg text-violet-600">
 						{booking.details.roomDetails}
 					</div>
 				</div>

@@ -28,21 +28,15 @@ export default function ItineraryCard(props: Props) {
 			<CardContent className="flex flex-col gap-3 text-secondary-foreground sm:flex-row sm:flex-wrap sm:gap-6 md:gap-8">
 				<div className="space-y-1.5">
 					<p className="text-sm">{props.hotels.length} hotels</p>
-					<p className="text-orange-600 dark:text-orange-500">
-						{props.hotels.toString()}
-					</p>
+					<p className="text-primary">{props.hotels.toString()}</p>
 				</div>
 				<div className="space-y-1.5">
 					<p className="text-sm">{props.flights.length} flights</p>
-					<p className="text-orange-600 dark:text-orange-500">
-						{props.flights.toString()}
-					</p>
+					<p className="text-primary">{props.flights.toString()}</p>
 				</div>
 				<div className="space-y-1.5">
 					<p className="text-sm">{props.places.length} places</p>
-					<p className="text-orange-600 dark:text-orange-500">
-						{props.places.toString()}
-					</p>
+					<p className="text-primary">{props.places.toString()}</p>
 				</div>
 			</CardContent>
 		</Card>
