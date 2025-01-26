@@ -12,11 +12,11 @@
 	:root {
 		--background: 0 0% 100%;
 		/* RGB 255 */
-		--secondary: 0 100% 98%;
-		/* RGB 250 */
-		--tertiary: 0 0% 94%;
+		--secondary: 0 0% 96%;
+		/* RGB 245 */
+		--tertiary: 0 0% 92%;
 		/* RGB 240 */
-		--muted: 0 0% 92%;
+		--muted: 0 0% 85%;
 		/* for hover states */
 
 		--foreground: 0 0% 0%;

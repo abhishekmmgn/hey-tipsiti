@@ -1,4 +1,4 @@
-import { convertToCoreMessages, type Message, streamText, tool } from "ai";
+import { convertToCoreMessages, type Message, streamText } from "ai";
 import { z } from "zod";
 import { geminiProModel } from "@/ai";
 import {
@@ -18,18 +18,21 @@ import {
 	createBooking,
 	createReservation,
 	getBookingById,
+	getItineraryByChatId,
 	getReservationById,
 	saveChat,
+	saveItinerary,
 } from "@/db/queries";
 import { generateUUID } from "@/lib/utils";
 import createClientForServer from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
+import type { PlaceType } from "@/lib/types";
 
 // Allow streaming responses up to 30 seconds
 export const maxDuration = 30;
 
 export async function POST(request: Request) {
-	const { id, messages }: { id: string; messages: Array<Message> } =
+	const { id: chatId, messages }: { id: string; messages: Array<Message> } =
 		await request.json();
 
 	const coreMessages = convertToCoreMessages(messages).filter(
@@ -58,7 +61,7 @@ export async function POST(request: Request) {
       - When city is final, ask their boarding city and show the flights.
       - Also ask if they want suggestions for the hotels in the destination city.
       - If the user is breaking the flow, let it break.
-    - After every tool call, if it is required, pretend you're showing the summary of the result to the user and keep your response limited to a phrase.
+    - After every tool call, if it is required, pretend you're showing the summary of the result to the user and keep your response limited to a phrase
     - Today's date is ${new Date().toLocaleDateString()}.
     - Ask follow up questions to nudge user into the optimal flow
     - Make sure to match the relevant names when giving the arguments, like if the user typed 'parise' instead of paris or barcelona instead of Barcelona, send the correct name as the argument to the tools.
@@ -269,17 +272,83 @@ export async function POST(request: Request) {
 							"Unique identifier for the booking the hotel or flight reservation",
 						),
 					type: z.string().describe("Type: 'hotel' or 'flight'"),
+					name: z
+						.string()
+						.describe(
+							"Name of the itinerary, like 'Paris Trip' or 'Honeymoon', etc",
+						),
+					description: z
+						.string()
+						.describe(
+							"Description of the itinerary. Short describing about the places user can visit and the activities they can do.",
+						),
 				}),
 				execute: async ({
 					id,
 					type,
-				}: { id: string; type: "hotel" | "flight" }) => {
+					name,
+					description,
+				}: {
+					id: string;
+					type: "hotel" | "flight";
+					name: string;
+					description: string;
+				}) => {
 					const reservation =
 						type === "hotel"
 							? await getBookingById({ id })
 							: await getReservationById({ id });
 
 					if (reservation.hasCompletedPayment) {
+						const i = await getItineraryByChatId({ chatId });
+						if (i) {
+							if (!i.name) {
+								await saveItinerary({
+									id: i.id,
+									name,
+									description,
+									bookings:
+										type === "hotel"
+											? [...(i.bookings as []), reservation.details]
+											: i.bookings,
+									reservations:
+										type === "flight"
+											? [...(i.reservations as []), reservation.details]
+											: i.reservations,
+									places: i.places,
+									chatId,
+									userId,
+								});
+							} else {
+								await saveItinerary({
+									id: i.id,
+									name: i.name,
+									description: i.description || "",
+									bookings:
+										type === "hotel"
+											? [...(i.bookings as []), reservation.details]
+											: i.bookings,
+									reservations:
+										type === "flight"
+											? [...(i.reservations as []), reservation.details]
+											: i.reservations,
+									places: i.places,
+									chatId,
+									userId,
+								});
+							}
+						} else {
+							await saveItinerary({
+								id: generateUUID(),
+								bookings: type === "hotel" ? [reservation.details] : [],
+								places: [],
+								reservations: type === "flight" ? [reservation.details] : [],
+								name: "",
+								description: "",
+								chatId,
+								userId,
+							});
+						}
 						return { hasCompletedPayment: true };
 					}
 					return { hasCompletedPayment: false };
@@ -380,7 +449,7 @@ export async function POST(request: Request) {
 		onFinish: async (res) => {
 			try {
 				await saveChat({
-					id,
+					id: chatId,
 					messages: [...coreMessages, ...res.response.messages],
 					userId,
 				});

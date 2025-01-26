@@ -62,7 +62,7 @@ export default function History() {
 					setIsHistoryVisible(state);
 				}}
 			>
-				<SheetContent side="left" className="p-3 w-80 bg-tertiary">
+				<SheetContent side="left" className="p-3 w-80">
 					<SheetHeader>
 						<VisuallyHidden.Root>
 							<SheetTitle className="text-left">History</SheetTitle>
@@ -112,7 +112,7 @@ export default function History() {
 									<Button
 										asChild
 										variant="ghost"
-										className={`max-w-72 justify-start ${item.id === id ? "bg-secondary text-primary" : "hover:text-secondary-foreground hover:bg-secondary"}`}
+										className={`max-w-72 justify-start ${item.id === id ? "bg-secondary text-primary hover:bg-secondary/50" : "hover:text-secondary-foreground hover:bg-secondary"}`}
 										key={item.id}
 									>
 										<Link

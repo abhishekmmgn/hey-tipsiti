@@ -56,6 +56,8 @@ export type Booking = InferSelectModel<typeof booking>;
 
 export const itinerary = pgTable("Itinerary", {
 	id: uuid("id").primaryKey().notNull().defaultRandom(),
+	name: varchar("name", { length: 64 }).notNull(),
+	description: varchar("description", { length: 256 }),
 	createdAt: timestamp("createdAt").notNull(),
 	places: json("places").notNull(),
 	bookings: json("bookings"),

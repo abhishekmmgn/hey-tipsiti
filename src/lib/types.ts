@@ -53,16 +53,6 @@ export type PlaceType = {
 	placeCategory?: string;
 };
 
-export type PlaceCardType = {
-	id: string;
-	name: string;
-	image: string;
-	cities: number;
-	places: number;
-	flights: number;
-	hotels: number;
-};
-
 export type HotelCardType = {
 	id: string;
 	location: string;
@@ -70,4 +60,28 @@ export type HotelCardType = {
 	priceInUSD: number;
 	reviews: number;
 	specs: string;
+};
+
+export type HotelConfirmationType = {
+	roomNumber: string;
+	hotelName: string;
+	location: string;
+	roomDetails: string;
+};
+
+export type AirportDetails = {
+	cityName: string;
+	airportCode: string;
+	airportName: string;
+	timestamp: string;
+	terminal: string;
+	gate: string;
+};
+export type BoardingPass = {
+	reservationId: string;
+	flightNumber: string;
+	seats: string[];
+	departure: AirportDetails;
+	arrival: AirportDetails;
+	passengerName: string;
 };

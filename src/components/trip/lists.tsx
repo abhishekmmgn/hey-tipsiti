@@ -4,14 +4,22 @@ import React, { ReactNode } from "react";
 import PlaceCard from "@/components/trip/place-card";
 import PreviewDialog from "./preview-dialog";
 
-export function PlacesList({ places }: { places: PlaceType[] }) {
+export function PlacesList({
+	chatId,
+	places,
+}: { chatId: string; places: PlaceType[] }) {
 	if (places.length === 0) return <p>No places found</p>;
 	return (
 		<div>
 			<ScrollArea className="w-72 xs:w-[360px] sm:w-[512px] md:w-[664px] sm:max-w-lg md:max-w-2xl whitespace-nowrap">
 				<div className="h-full w-max flex gap-5 pb-3">
 					{places.slice(0, 6)?.map((place) => (
-						<PlaceCard {...place} isChatUI={true} key={place.id} />
+						<PlaceCard
+							{...place}
+							isChatUI={true}
+							key={place.id}
+							chatId={chatId}
+						/>
 					))}
 				</div>
 				<ScrollBar orientation="horizontal" />
@@ -30,6 +38,7 @@ export function PlacesList({ places }: { places: PlaceType[] }) {
 									isChatUI={true}
 									key={place.id}
 									className="max-w-sm"
+									chatId={chatId}
 								/>
 							))}
 						</div>

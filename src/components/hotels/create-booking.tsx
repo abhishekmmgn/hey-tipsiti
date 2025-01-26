@@ -18,9 +18,8 @@ export default function CreateBooking({ booking = SAMPLE }) {
 						<span className="text-foreground/50">
 							Continue purchasing this booking of{" "}
 						</span>
-						{booking.roomNumber} at
-						{booking.hotelName}
-						<span className="text-foreground/50"> at </span>{" "}
+						Room {booking.roomNumber} at {booking.hotelName}
+						<span className="text-foreground/50"> for </span>{" "}
 						<span className="text-emerald-600 font-medium">
 							${booking.totalPriceInUSD} USD
 							<span className="text-foreground/50 ">?</span>

@@ -97,6 +97,8 @@ export async function saveItinerary({
 	bookings,
 	reservations,
 	chatId,
+	name,
+	description,
 	userId,
 }: {
 	id: string;
@@ -108,6 +110,8 @@ export async function saveItinerary({
 	reservations: any;
 	chatId: string;
 	userId: string;
+	name: string;
+	description: string;
 }) {
 	try {
 		const selectedItenerary = await db
@@ -123,11 +127,13 @@ export async function saveItinerary({
 					bookings: JSON.stringify(bookings),
 					reservations: JSON.stringify(reservations),
 				})
-				.where(eq(chat.id, id));
+				.where(eq(itinerary.id, id));
 		}
 
 		return await db.insert(itinerary).values({
 			id,
+			name,
+			description,
 			chatId,
 			userId,
 			createdAt: new Date(),
@@ -136,6 +142,7 @@ export async function saveItinerary({
 			places: JSON.stringify(places),
 		});
 	} catch (error) {
+		console.log(error);
 		console.error("Failed to save chat in database");
 		throw error;
 	}
@@ -148,7 +155,20 @@ export async function getItineraries(userId: string) {
 			.from(itinerary)
 			.where(eq(itinerary.userId, userId));
 	} catch (error) {
-		console.error("Failed to get initneraries from database");
+		console.error("Failed to get itineraries from database");
+		throw error;
+	}
+}
+
+export async function getItinerary({ id }: { id: string }) {
+	try {
+		const [selectedItinerary] = await db
+			.select()
+			.from(itinerary)
+			.where(eq(itinerary.id, id));
+		return selectedItinerary;
+	} catch (error) {
+		console.error("Failed to get itineraries from database");
 		throw error;
 	}
 }
@@ -246,4 +266,18 @@ export async function updateBooking({
 			hasCompletedPayment,
 		})
 		.where(eq(booking.id, id));
+}
+
+export async function getItineraryByChatId({ chatId }: { chatId: string }) {
+	try {
+		const [selectedItinerary] = await db
+			.select()
+			.from(itinerary)
+			.where(eq(itinerary.chatId, chatId));
+		return selectedItinerary;
+	} catch (error) {
+		console.log(error);
+		console.error("Failed to get itinerary by chat id from database");
+		// throw error;
+	}
 }

@@ -14,6 +14,7 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Bookmark, X } from "lucide-react";
 import { useState } from "react";
+import { savePlace } from "@/lib/itinerary-actions";
 
 export default function PlaceCard(
 	props: PlaceType & {
@@ -24,15 +25,11 @@ export default function PlaceCard(
 ) {
 	const [saved, setSaved] = useState(false);
 
-	function saveItem() {
-		// addtoItenerary(props.id);
-		setSaved(true);
-	}
-
-	function removeItem() {
+	async function removeItem() {
 		// removeFromItinerary(props.id);
 		setSaved(false);
 	}
+
 	return (
 		<Card className={cn("h-fit w-full max-w-80 border", props.className)}>
 			<CardContent className="relative aspect-square rounded-t-xl">
@@ -63,12 +60,28 @@ export default function PlaceCard(
 							Loading...
 						</Button>
 					) : saved ? (
-						<Button variant="outline" className="w-full" onClick={removeItem}>
-							<X />
-							Remove from itinerary
+						<Button
+							variant="outline"
+							className="w-full cursor-auto bg-secondary"
+						>
+							{/* <X /> */}
+							Added to itinerary
 						</Button>
 					) : (
-						<Button className="w-full" onClick={saveItem}>
+						<Button
+							className="w-full"
+							onClick={async () => {
+								await savePlace(props.chatId as string, {
+									id: props.id,
+									name: props.name,
+									description: props.description,
+									image: props.image,
+									city: props.city,
+									placeCategory: props.placeCategory,
+								});
+								setSaved(true);
+							}}
+						>
 							<Bookmark />
 							Save to itinerary
 						</Button>

@@ -1,7 +1,8 @@
+import type { BoardingPass } from "@/lib/types";
 import { format } from "date-fns";
 import { FlashlightIcon, PlaneTakeoffIcon } from "lucide-react";
 
-const SAMPLE = {
+const SAMPLE: BoardingPass = {
 	reservationId: "RES123456",
 	flightNumber: "DL1",
 	seats: ["1C"],

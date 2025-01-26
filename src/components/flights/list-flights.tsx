@@ -87,12 +87,12 @@ export function ListFlights({
 	});
 
 	return (
-		<div className="rounded-lg bg-tertiary px-4 py-1.5 flex flex-col">
+		<div className="rounded-lg bg-tertiary p-1.5 flex flex-col">
 			{results.flights.map((flight) => (
 				// biome-ignore lint/a11y/useKeyWithClickEvents: <explanation>
 				<div
 					key={flight.id}
-					className="cursor-pointer flex flex-row border-b py-2 last-of-type:border-none group"
+					className="cursor-pointer flex flex-row border-b py-2 last-of-type:border-none hover:bg-secondary/50 px-2 hover:rounded-lg"
 					onClick={() => {
 						append({
 							role: "user",
@@ -101,7 +101,7 @@ export function ListFlights({
 					}}
 				>
 					<div className="flex flex-col w-full gap-0.5 justify-between">
-						<div className="flex flex-row gap-0.5 text-base sm:text-base font-medium group-hover:underline">
+						<div className="flex flex-row gap-0.5 text-base sm:text-base font-medium">
 							<div className="text">
 								{format(new Date(flight.departure.timestamp), "h:mm a")}
 							</div>

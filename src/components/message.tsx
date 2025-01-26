@@ -76,9 +76,9 @@ export const Message = ({
 										) : toolName === "getWeather" ? (
 											<Weather weatherAtLocation={result} />
 										) : toolName === "getPlacesInACity" ? (
-											<PlacesList places={result} />
+											<PlacesList chatId={chatId} places={result} />
 										) : toolName === "getPlacesInACountry" ? (
-											<PlacesList places={result} />
+											<PlacesList chatId={chatId} places={result} />
 										) : toolName === "getCitiesInACountry" ? (
 											<p>{result.toString()}</p>
 										) : toolName === "displayFlightStatus" ? (
@@ -101,7 +101,7 @@ export const Message = ({
 										) : toolName === "verifyPayment" ? (
 											<VerifyPayment result={result} />
 										) : toolName === "displayBookingReciept" ? (
-											<DisplayReceipt receipt={result} />
+											<DisplayReceipt booking={result.booking} />
 										) : toolName === "findHotels" ? (
 											<ListHotels chatId={chatId} results={result} />
 										) : toolName === "selectRooms" ? (
