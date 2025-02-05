@@ -21,7 +21,7 @@ export default async function Page({ params, searchParams }: Props) {
 		<main className="mt-14 max-w-screen-lg mx-auto default-gap">
 			<section className="10 mx-auto grid space-y-8 md:space-y-10 lg:space-y-12">
 				<h1 className="home-h2 leading-tight text-center mx-auto">
-					Hey, Tipsiti!
+					Hey, Trip AI!
 					<br />
 					Let's plan the next adventure
 				</h1>

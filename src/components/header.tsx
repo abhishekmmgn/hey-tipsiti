@@ -1,8 +1,5 @@
-import Image from "next/image";
 import Link from "next/link";
 import History from "./history";
-import tipsitiImageDark from "../../public/tipsiti-logo-dark.png";
-import tipsitiImageLight from "../../public/tipsiti-logo-light.png";
 import Share from "./share";
 import Itinerary from "@/components/trip/itinerary";
 import createClientForServer from "@/lib/supabase/server";
@@ -11,21 +8,8 @@ import Logout from "./logout";
 
 function TipsitiImg() {
 	return (
-		<Link href="/">
-			<Image
-				src={tipsitiImageLight}
-				alt="Tipsiti Logo"
-				width={240}
-				height={48}
-				className="h-6 w-auto hidden dark:inline-block"
-			/>
-			<Image
-				src={tipsitiImageDark}
-				alt="Tipsiti Logo"
-				width={240}
-				height={48}
-				className="h-6 w-auto dark:hidden"
-			/>
+		<Link href="/" className="font-semibold text-lg">
+			Trip AI
 		</Link>
 	);
 }
