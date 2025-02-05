@@ -6,8 +6,8 @@ import { Toaster } from "sonner";
 import Providers from "@/components/providers";
 
 export const metadata: Metadata = {
-	title: "Tipsit AI",
-	description: "Tipsit AI- Let's plan your trip.",
+	title: "Trip AI",
+	description: "Plan trips, book flights and hotels in a LLM Chat-based interface.",
 };
 
 const interSans = Inter({
